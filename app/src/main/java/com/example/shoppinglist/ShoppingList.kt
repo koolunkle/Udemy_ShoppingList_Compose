@@ -2,6 +2,7 @@ package com.example.shoppinglist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,7 +30,7 @@ data class ShoppingItem(
 
 @Composable
 fun ShoppingListApp(modifier: Modifier = Modifier) {
-    val shoppingItems by remember { mutableStateOf(listOf<ShoppingItem>()) }
+    var shoppingItems by remember { mutableStateOf(listOf<ShoppingItem>()) }
     var isShowDialog by remember { mutableStateOf(false) }
 
     var itemName by remember { mutableStateOf("") }
@@ -58,7 +59,34 @@ fun ShoppingListApp(modifier: Modifier = Modifier) {
     if (isShowDialog) {
         AlertDialog(
             onDismissRequest = { isShowDialog = false },
-            confirmButton = { },
+            confirmButton = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(
+                        onClick = {
+                            if (itemName.isNotBlank()) {
+                                val newItem = ShoppingItem(
+                                    id = shoppingItems.size + 1,
+                                    name = itemName,
+                                    quantity = itemQuantity.toIntOrNull() ?: 0
+                                )
+                                shoppingItems = shoppingItems + newItem
+                                isShowDialog = false
+                                itemName = ""
+                            }
+                        }
+                    ) {
+                        Text(text = "Add")
+                    }
+                    Button(onClick = { isShowDialog = false }) {
+                        Text(text = "Cancel")
+                    }
+                }
+            },
             title = { Text(text = "Add Shopping Item") },
             text = {
                 Column {
