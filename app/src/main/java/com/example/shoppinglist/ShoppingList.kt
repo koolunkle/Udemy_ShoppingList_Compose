@@ -3,11 +3,13 @@ package com.example.shoppinglist
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,6 +31,9 @@ data class ShoppingItem(
 fun ShoppingListApp(modifier: Modifier = Modifier) {
     val shoppingItems by remember { mutableStateOf(listOf<ShoppingItem>()) }
     var isShowDialog by remember { mutableStateOf(false) }
+
+    var itemName by remember { mutableStateOf("") }
+    var itemQuantity by remember { mutableStateOf("") }
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -55,7 +60,26 @@ fun ShoppingListApp(modifier: Modifier = Modifier) {
             onDismissRequest = { isShowDialog = false },
             confirmButton = { },
             title = { Text(text = "Add Shopping Item") },
-            text = { Text("I'm an Alert Dialog") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = itemName,
+                        onValueChange = { itemName = it },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
+                    OutlinedTextField(
+                        value = itemQuantity,
+                        onValueChange = { itemQuantity = it },
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
+                }
+            },
         )
     }
 }
