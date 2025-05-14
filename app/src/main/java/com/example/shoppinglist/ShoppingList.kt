@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -63,12 +64,32 @@ fun ShoppingListApp(modifier: Modifier = Modifier) {
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            items(shoppingItems) {
-                ShoppingListItem(
-                    item = it,
-                    onEditClick = {},
-                    onDeleteClick = {},
-                )
+            items(shoppingItems) { item ->
+                if (item.isEditing) {
+                    ShoppingItemEditor(
+                        item = item,
+                        onEditComplete = { editedName, editedQuantity ->
+                            shoppingItems = shoppingItems.map { it.copy(isEditing = false) }
+                            val editedItem = shoppingItems.find { it.id == item.id }
+                            editedItem?.let {
+                                it.name = editedName
+                                it.quantity = editedQuantity
+                            }
+                        },
+                    )
+                } else {
+                    ShoppingListItem(
+                        item = item,
+                        onEditClick = {
+                            // finding out which item we are editing and changing "isEditing" to true
+                            shoppingItems =
+                                shoppingItems.map { it.copy(isEditing = it.id == item.id) }
+                        },
+                        onDeleteClick = {
+                            shoppingItems = shoppingItems - item
+                        },
+                    )
+                }
             }
         }
     }
@@ -93,6 +114,7 @@ fun ShoppingListApp(modifier: Modifier = Modifier) {
                                 shoppingItems = shoppingItems + newItem
                                 isShowDialog = false
                                 itemName = ""
+                                itemQuantity = ""
                             }
                         }
                     ) {
@@ -136,17 +158,16 @@ fun ShoppingItemEditor(
     var editedName by remember { mutableStateOf(item.name) }
     var editedQuantity by remember { mutableStateOf(item.quantity.toString()) }
     var isEditing by remember { mutableStateOf(item.isEditing) }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.White)
+            .background(color = Color.White, shape = CircleShape)
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         Column {
             BasicTextField(
-                value = "",
+                value = editedName,
                 onValueChange = { editedName = it },
                 singleLine = true,
                 modifier = Modifier
@@ -154,7 +175,7 @@ fun ShoppingItemEditor(
                     .padding(8.dp)
             )
             BasicTextField(
-                value = "",
+                value = editedQuantity,
                 onValueChange = { editedQuantity = it },
                 singleLine = true,
                 modifier = Modifier
@@ -186,10 +207,11 @@ fun ShoppingListItem(
             .border(
                 border = BorderStroke(width = 2.dp, color = Color(0xFF018786)),
                 shape = RoundedCornerShape(20)
-            )
+            ),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = item.name,
+            text = "Name: ${item.name}",
             modifier = Modifier.padding(8.dp),
         )
         Text(
