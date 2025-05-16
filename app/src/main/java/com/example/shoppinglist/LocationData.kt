@@ -5,11 +5,11 @@ data class LocationData(
     val longitude: Double,
 )
 
-data class GeoCodingResponse(
-    val results: List<GeoCodingResult>,
+data class GeocodingResponse(
+    val results: List<GeocodingResult>,
     val status: String,
 )
 
-data class GeoCodingResult(
+data class GeocodingResult(
     val formatted_address: String,
 )
