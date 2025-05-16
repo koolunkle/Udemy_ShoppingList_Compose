@@ -14,8 +14,8 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 
 @Composable
 fun LocationSelectionScreen(
@@ -32,15 +32,12 @@ fun LocationSelectionScreen(
     Column(modifier = modifier.fillMaxSize()) {
         GoogleMap(
             cameraPositionState = cameraPositionState,
-            onMapClick = { latLng ->
-                userLocation.value = latLng
-                onLocationSelected(LocationData(latLng.latitude, latLng.longitude))
-            },
+            onMapClick = { userLocation.value = it },
             modifier = Modifier
                 .weight(1f)
                 .padding(top = 16.dp),
         ) {
-            Marker(state = rememberMarkerState(position = userLocation.value))
+            Marker(state = rememberUpdateMarkerState(newPosition = userLocation.value))
         }
         var newLocation: LocationData
         Button(
@@ -54,3 +51,8 @@ fun LocationSelectionScreen(
         }
     }
 }
+
+@Composable
+fun rememberUpdateMarkerState(newPosition: LatLng) =
+    remember { MarkerState(position = newPosition) }
+        .apply { position = newPosition }
