@@ -1,6 +1,10 @@
 package com.example.shoppinglist
 
+import android.Manifest
 import android.content.Context
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,6 +63,31 @@ fun ShoppingListApp(
 
     var itemName by remember { mutableStateOf("") }
     var itemQuantity by remember { mutableStateOf("") }
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = { permissions ->
+            if (permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true && permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
+                // User has access to location
+                locationUtils.requestLocationUpdates(viewModel)
+            } else {
+                // Ask for permission
+                if (locationUtils.shouldShowLocationRationale()) {
+                    Toast.makeText(
+                        context,
+                        "Location Permission is required for the feature to work",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Location Permission is required. Please enable it in the Android Settings",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        },
+    )
 
     Column(
         modifier = modifier.fillMaxSize(),
@@ -155,6 +184,23 @@ fun ShoppingListApp(
                             .fillMaxWidth()
                             .padding(8.dp)
                     )
+                    Button(
+                        onClick = {
+                            if (locationUtils.hasLocationPermission()) {
+                                locationUtils.requestLocationUpdates(viewModel)
+                                navController.navigate("locationScreen") { this.launchSingleTop }
+                            } else {
+                                requestPermissionLauncher.launch(
+                                    arrayOf(
+                                        Manifest.permission.ACCESS_FINE_LOCATION,
+                                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                                    )
+                                )
+                            }
+                        },
+                    ) {
+                        Text("Address")
+                    }
                 }
             },
         )

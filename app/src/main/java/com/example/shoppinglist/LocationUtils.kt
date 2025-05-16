@@ -1,5 +1,6 @@
 package com.example.shoppinglist
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
@@ -13,7 +14,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
-class LocationUtils(context: Context) {
+class LocationUtils(private val context: Context) {
 
     private val _fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
@@ -52,15 +53,15 @@ class LocationUtils(context: Context) {
     //     }
     // }
 
-    // fun hasLocationPermission(): Boolean =
-    //     context.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) && context.hasPermission(
-    //         Manifest.permission.ACCESS_COARSE_LOCATION
-    //     )
+    fun hasLocationPermission(): Boolean =
+        context.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) && context.hasPermission(
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
 
-    // fun shouldShowLocationRationale(): Boolean =
-    //     context.shouldShowRationale(Manifest.permission.ACCESS_FINE_LOCATION) || context.shouldShowRationale(
-    //         Manifest.permission.ACCESS_COARSE_LOCATION
-    //     )
+    fun shouldShowLocationRationale(): Boolean =
+        context.shouldShowRationale(Manifest.permission.ACCESS_FINE_LOCATION) || context.shouldShowRationale(
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
 }
 
 fun Context.hasPermission(permission: String): Boolean =
